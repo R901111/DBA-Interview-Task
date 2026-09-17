@@ -25,15 +25,14 @@ GO
 CREATE TABLE dbo.Orders (
     OrderId     BIGINT IDENTITY(1,1) NOT NULL,
     OrderNo     VARCHAR(20) NOT NULL,
+    InvoiceNo   VARCHAR(50) NULL,           -- 【Q5 新增】發票號碼欄位
     MemberId    BIGINT NOT NULL,
     TotalAmount DECIMAL(10, 2) NOT NULL,
-    Status      TINYINT NOT NULL,           -- 使用 TINYINT 節省空間 (對應程式端 Enum)
-    CreatedAt   DATETIME2(0) NOT NULL,      -- 精確到秒即可，節省空間
+    Status      TINYINT NOT NULL,           
+    CreatedAt   DATETIME2(0) NOT NULL,      
     
-    -- 注意：要讓資料表分區對齊 (Partition Alignment)，PK 必須包含分區鍵 (Partition Column)
     CONSTRAINT PK_Orders PRIMARY KEY CLUSTERED (OrderId, CreatedAt)
 ) ON ps_OrderDate_Monthly(CreatedAt);
-GO
 
 -- 針對常用的 MemberId 查詢建立非叢集索引 (Aligned Index)
 CREATE NONCLUSTERED INDEX IX_Orders_MemberId 
